@@ -19,7 +19,9 @@ const parseOptions = <TRoot extends AnyRootConfig>(
   }
 }
 
-export const createGetIPFunc = <Req>(func: (r?: Req) => string | undefined) => {
+export const createGetIPFunc = <Req>(
+  func: (r?: Req) => string | null | string[] | undefined
+) => {
   return (req: Req) => {
     if (!req) {
       throw new TRPCError({
@@ -28,6 +30,7 @@ export const createGetIPFunc = <Req>(func: (r?: Req) => string | undefined) => {
       })
     }
     const ip = func(req) ?? '127.0.0.1'
+    if (Array.isArray(ip)) return ip[0]
     return ip
   }
 }
@@ -63,13 +66,6 @@ export const createRateLimiterWrapper = <Res, TRoot extends AnyRootConfig>(
     }
 
     return middleware
-  }
-}
-
-export const verifyIP = (ip?: string | string[] | null): string | undefined => {
-  if (ip) {
-    if (Array.isArray(ip)) return ip[0]
-    return ip
   }
 }
 
