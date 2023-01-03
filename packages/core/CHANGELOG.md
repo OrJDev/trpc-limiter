@@ -1,5 +1,13 @@
 # @trpc-limiter/core
 
+## 0.0.6
+
+### Patch Changes
+
+- [`aa3c8f2`](https://github.com/OrJDev/trpc-limiter/commit/aa3c8f263084c093f4884719a41e1c5ec8176ca4) Thanks [@OrJDev](https://github.com/OrJDev)! - Remove the shouldThrow opt and move the message function down
+
+- [`8929306`](https://github.com/OrJDev/trpc-limiter/commit/89293062d488ab352e44b246ada2436341bb9a0c) Thanks [@OrJDev](https://github.com/OrJDev)! - Add onLimit,shouldThrow, and message function
+
 ## 0.0.5
 
 ### Patch Changes
