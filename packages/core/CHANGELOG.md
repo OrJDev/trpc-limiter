@@ -1,5 +1,11 @@
 # @trpc-limiter/core
 
+## 0.0.5
+
+### Patch Changes
+
+- [`f538404`](https://github.com/OrJDev/trpc-limiter/commit/f5384047ca6815b67f87dc912b82e1f154e65d04) Thanks [@OrJDev](https://github.com/OrJDev)! - Move to fingerprint system
+
 ## 0.0.4
 
 ### Patch Changes
