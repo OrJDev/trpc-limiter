@@ -1,0 +1,37 @@
+{
+  "name": "@trpc-limiter/core",
+  "version": "0.0.1",
+  "private": false,
+  "repository": "https://github.com/OrJDev/trpc-limiter.git",
+  "license": "ISC",
+  "author": "OrJDev",
+  "type": "module",
+  "exports": {
+    ".": "./dist/index.js"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup --config ../../tsup.config.js",
+    "clean": "rm -rf dist .turbo node_modules",
+    "dev": "tsup --config ../../tsup.config.js --watch",
+    "lint": "eslint . --fix --ext .ts,.tsx,.js,.jsx",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.3",
+    "@trpc/client": "^10.7.0",
+    "@trpc/server": "^10.7.0"
+  },
+  "peerDependencies": {
+    "@trpc/client": "^10.0.0-proxy-beta.21",
+    "@trpc/server": "^10.0.0-proxy-beta.21"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}

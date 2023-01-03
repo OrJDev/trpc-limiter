@@ -1,0 +1,49 @@
+{
+  "name": "trpc-limiter-root",
+  "version": "1.0.0",
+  "private": true,
+  "license": "ISC",
+  "author": "OrJDev",
+  "type": "module",
+  "scripts": {
+    "build": "turbo build",
+    "clean": "turbo clean && rm -rf node_modules pnpm-lock.yaml",
+    "dev": "turbo dev",
+    "dev:packages": "turbo dev --filter=./packages/*",
+    "lint": "eslint . --fix --ext .ts,.tsx,.js,.jsx",
+    "prepare": "husky install",
+    "www": "cd www && pnpm dev"
+  },
+  "lint-staged": {
+    "*.{js,json}": "prettier --write",
+    "packages/**/*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "examples/**/*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "package.json": "sort-package-json"
+  },
+  "devDependencies": {
+    "@changesets/changelog-github": "^0.4.7",
+    "@changesets/cli": "^2.25.2",
+    "@types/node": "^18.11.9",
+    "@typescript-eslint/eslint-plugin": "^5.44.0",
+    "@typescript-eslint/parser": "^5.44.0",
+    "eslint": "^8.28.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-config-standard-with-typescript": "^23.0.0",
+    "eslint-plugin-import": "^2.26.0",
+    "eslint-plugin-n": "^15.5.1",
+    "eslint-plugin-promise": "^6.1.1",
+    "husky": "^8.0.0",
+    "lint-staged": "^13.0.4",
+    "prettier": "^2.8.0",
+    "sort-package-json": "^2.1.0",
+    "tsup": "^6.5.0",
+    "turbo": "^1.6.3",
+    "typescript": "^4.9.3"
+  }
+}
