@@ -16,6 +16,4 @@ const limiter = createTRPCSolidLimiter({
   max: 15,
 })
 
-console.log(limiter)
-
 export const rateLimitedProcedure = root.procedure.use(limiter)
