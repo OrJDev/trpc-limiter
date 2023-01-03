@@ -22,7 +22,7 @@
     "README.md"
   ],
   "scripts": {
-    "build": "tsup --config ./tsup.config.js",
+    "build": "tsup --config ../../tsup.config.js",
     "clean": "rm -rf dist .turbo node_modules",
     "dev": "tsup --config ../../tsup.config.js --watch",
     "lint": "eslint . --fix --ext .ts,.tsx,.js,.jsx",

@@ -5,7 +5,7 @@ import {
   TRPCError,
 } from '@trpc/server'
 import { MemoryStore } from './store'
-import { type TRPCRateLimitOptions } from './types'
+import { type ILimiterCore, type TRPCRateLimitOptions } from './types'
 
 const parseOptions = <TRoot extends AnyRootConfig>(
   passed: TRPCRateLimitOptions<TRoot>
@@ -75,3 +75,7 @@ export const verifyIP = (ip?: string | string[] | null): string | undefined => {
 
 export * from './types'
 export * from './store'
+
+export const defineMiddleware = (middleware: ILimiterCore) => {
+  return middleware
+}

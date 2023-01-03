@@ -2,14 +2,16 @@ import {
   createRateLimiterWrapper,
   createGetIPFunc,
   verifyIP,
-  type ILimiterCore,
+  defineMiddleware,
 } from '@trpc-limiter/core'
 
-export const createTRPCSolidLimiter = createRateLimiterWrapper(
-  createGetIPFunc<Request>((req) => {
-    return verifyIP(req?.headers.get('x-forwarded-for'))
-  }),
-  (name, value, res: Record<string, string>) => {
-    return (res[name] = value)
-  }
-) as ILimiterCore
+export const createTRPCSolidLimiter = defineMiddleware(
+  createRateLimiterWrapper(
+    createGetIPFunc<Request>((req) => {
+      return verifyIP(req?.headers.get('x-forwarded-for'))
+    }),
+    (name, value, res: Record<string, string>) => {
+      return (res[name] = value)
+    }
+  )
+)
