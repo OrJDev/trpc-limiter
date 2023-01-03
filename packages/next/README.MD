@@ -23,5 +23,5 @@ const limiter = createTRPCNextLimiter({
   max: 15,
 })
 
-export const rateLimitedProcedure = root.procedure.use(rateLimiter)
+export const rateLimitedProcedure = root.procedure.use(limiter)
 ```

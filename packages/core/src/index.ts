@@ -15,9 +15,10 @@ const parseOptions = (
   }
 }
 
-export const createTRPCRateLimiter = (
+export const createTRPCRateLimiter = <Res>(
   opts: TRPCRateLimitOptions,
-  getReqIp: (...args: any[]) => string | undefined
+  getReqIp: (...args: any[]) => string | undefined,
+  setHeader: (name: string, value: any, res: Res) => void
 ) => {
   const options = parseOptions(opts)
   const store = new MemoryStore(options)
@@ -31,11 +32,11 @@ export const createTRPCRateLimiter = (
       })
     }
     const { totalHits, resetTime } = await store.increment(ip)
-    console.log('[RateLimiter] headers', ctx.res.headers)
+    console.log('[RateLimiter] headers', ctx.res)
     if (totalHits > options.max) {
       const retryAfter = Math.ceil((resetTime.getTime() - Date.now()) / 1000)
       if (opts.shouldSetHeaders) {
-        ctx?.res?.setHeader('Retry-After', retryAfter)
+        setHeader('Retry-After', retryAfter, ctx.res)
       }
       throw new TRPCError({
         code: 'TOO_MANY_REQUESTS',
@@ -57,13 +58,13 @@ export const createGetIPFunc = <Req>(func: (r: Req) => string | undefined) => {
         message: 'No request object: expected `req` to be defined',
       })
     }
-    const ip = func(req)
-    if (!ip) {
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'No IP found',
-      })
-    }
+    const ip = func(req) ?? '127.0.0.1'
+    // if (!ip) {
+    //   throw new TRPCError({
+    //     code: 'INTERNAL_SERVER_ERROR',
+    //     message: 'No IP found',
+    //   })
+    // }
     return ip
   }
 }

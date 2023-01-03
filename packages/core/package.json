@@ -2,6 +2,15 @@
   "name": "@trpc-limiter/core",
   "version": "0.0.1",
   "private": false,
+  "keywords": [
+    "tRPC",
+    "Limiter",
+    "Next",
+    "NextJS",
+    "Solid",
+    "SolidStart",
+    "Core"
+  ],
   "repository": "https://github.com/OrJDev/trpc-limiter.git",
   "license": "ISC",
   "author": "OrJDev",
@@ -23,9 +32,9 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "typescript": "^4.9.3",
     "@trpc/client": "^10.7.0",
-    "@trpc/server": "^10.7.0"
+    "@trpc/server": "^10.7.0",
+    "typescript": "^4.9.3"
   },
   "peerDependencies": {
     "@trpc/client": "^10.0.0-proxy-beta.21",
