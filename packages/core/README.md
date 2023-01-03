@@ -15,7 +15,7 @@ The core of tRPC limiter.
 npm install @trpc-limiter/core
 ```
 
-### Usage
+### Usage - API
 
 ```ts
 import { asLimiterCore, defineTRPCLimiter } from '@trpc-limiter/core'
@@ -31,4 +31,24 @@ export const createMyTRPCLimiter = asLimiterCore<MyRequestType, MyResponseType>(
     }
   )
 )
+```
+
+### Usage - tRPC Middleware
+
+```ts
+import { initTRPC } from '@trpc/server'
+
+const root = initTRPC.create()
+
+const limiter = createMyTRPCLimiter({
+  root,
+  // ctx is typesafed and inferred from the root
+  getReq: (ctx) => ctx.req, // Expected `MyRequestType`
+  getRes: (ctx) => ctx.res, // Expected `MyResponseType`
+  windowMs: 10000,
+  message: 'Too many requests, please try again later.',
+  max: 15,
+})
+
+export const rateLimitedProcedure = root.procedure.use(limiter)
 ```
