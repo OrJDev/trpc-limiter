@@ -1,4 +1,4 @@
-import { initTRPC } from '@trpc/server'
+import { initTRPC, TRPCError } from '@trpc/server'
 import type { IContext } from './context'
 import { createTRPCLimiter } from '@trpc-limiter/core'
 
@@ -11,8 +11,17 @@ const limiter = createTRPCLimiter({
   root,
   fingerprint: (ctx) => ctx.req.headers.get('x-forwarded-for') ?? '127.0.0.1',
   windowMs: 20000,
-  message: 'Too many requests, please try again later.',
+  message: (hitInfo) =>
+    `Too many requests, please try again later. ${hitInfo.retryAfter}`,
   max: 15,
+  shouldThrow: false,
+  onLimit: (hitInfo, _ctx, fingerprint) => {
+    console.log(hitInfo, fingerprint)
+    throw new TRPCError({
+      code: 'INTERNAL_SERVER_ERROR',
+      message: 'Too many requests unique',
+    })
+  },
 })
 
 export const rateLimitedProcedure = root.procedure.use(limiter)

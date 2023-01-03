@@ -1,8 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  type MiddlewareFunction,
-  type AnyRootConfig as IAnyRootConfig,
-} from '@trpc/server'
+import { type AnyRootConfig as IAnyRootConfig } from '@trpc/server'
 
 export type AnyRootConfig = {
   _config: IAnyRootConfig
@@ -31,7 +28,18 @@ export type TRPCRateLimitOptions<TRoot extends AnyRootConfig> = {
    * The response body to send when a request is blocked.
    * @default 'Too many requests, please try again later.'
    **/
-  message?: string
+  message?: string | ILimiterCallback<TRoot>
+
+  /**
+   * Should throw tRPC error when request is blocked.
+   * @default true
+   **/
+  shouldThrow?: boolean
+
+  /**
+   * This will be called when a request is blocked.
+   **/
+  onLimit?: ILimiterCallback<TRoot, void>
 
   /**
    * Function to generate a fingerprint for a request based on tRPC context.
@@ -42,6 +50,13 @@ export type TRPCRateLimitOptions<TRoot extends AnyRootConfig> = {
   ) => string | Promise<string>
 }
 
-export type ILimiterCore = <TRoot extends AnyRootConfig>(
-  opts: TRPCRateLimitOptions<TRoot>
-) => MiddlewareFunction<any, any>
+export type ILimiterinfo = {
+  retryAfter: number
+  totalHits: number
+}
+
+export type ILimiterCallback<TRoot extends AnyRootConfig, T = string> = (
+  info: ILimiterinfo,
+  ctx: TRoot['_config']['$types']['ctx'],
+  fingerprint: string
+) => T | Promise<T>
