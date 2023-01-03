@@ -10,13 +10,19 @@ An open source, tRPC rate limiter middleware inspired by [express-rate-limiter](
 
 ## Typesafety
 
-Ofc tRPC is all about typesafety, so tRPC limiter is also about typesafety, here is an example usage of NextJS:
+Ofc tRPC is all about typesafety, so tRPC limiter is also type-safed, here is an example usage of NextJS:
 
 ```ts
 import { createTRPCNextLimiter } from '@trpc-limiter/next'
 import { initTRPC } from '@trpc/server'
+import { type NextApiResponse, type NextApiRequest } from 'next'
 
-const root = initTRPC.create()
+type IContext = {
+  req: NextApiRequest
+  res: NextApiResponse
+}
+
+const root = initTRPC.context<IContext>().create()
 
 const limiter = createTRPCNextLimiter({
   root,

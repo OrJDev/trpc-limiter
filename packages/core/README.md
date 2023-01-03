@@ -38,7 +38,12 @@ export const createMyTRPCLimiter = asLimiterCore<MyRequestType, MyResponseType>(
 ```ts
 import { initTRPC } from '@trpc/server'
 
-const root = initTRPC.create()
+type IContext = {
+  req: MyRequestType
+  res: MyResponseType
+}
+
+const root = initTRPC.context<IContext>().create()
 
 const limiter = createMyTRPCLimiter({
   root,

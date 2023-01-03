@@ -14,7 +14,12 @@ npm install @trpc-limiter/solid
 import { createTRPCSolidLimiter } from '@trpc-limiter/solid'
 import { initTRPC } from '@trpc/server'
 
-const root = initTRPC.create()
+type IContext = {
+  req: Request
+  res: Response
+}
+
+const root = initTRPC.context<IContext>().create()
 
 const limiter = createTRPCSolidLimiter({
   root,

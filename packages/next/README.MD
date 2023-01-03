@@ -13,8 +13,14 @@ npm install @trpc-limiter/next
 ```ts
 import { createTRPCNextLimiter } from '@trpc-limiter/next'
 import { initTRPC } from '@trpc/server'
+import { type NextApiResponse, type NextApiRequest } from 'next'
 
-const root = initTRPC.create()
+type IContext = {
+  req: NextApiRequest
+  res: NextApiResponse
+}
+
+const root = initTRPC.context<IContext>().create()
 
 const limiter = createTRPCNextLimiter({
   root,
