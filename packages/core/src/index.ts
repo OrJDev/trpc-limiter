@@ -56,7 +56,7 @@ export const defineTRPCLimiter = <Req, Res>(
       if (totalHits > options.max) {
         const retryAfter = Math.ceil((resetTime.getTime() - Date.now()) / 1000)
         if (opts.shouldSetHeaders) {
-          const res = opts.getRes(ctx.res)
+          const res = opts.getRes(ctx)
           setHeader('Retry-After', retryAfter, res)
         }
         throw new TRPCError({
