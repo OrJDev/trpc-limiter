@@ -1,17 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   type MiddlewareFunction,
-  type RootConfig,
-  type DefaultErrorShape,
+  type AnyRootConfig as IAnyRootConfig,
 } from '@trpc/server'
 
 export type AnyRootConfig = {
-  _config: RootConfig<{
-    ctx: any
-    meta: object
-    errorShape: DefaultErrorShape
-    transformer: any
-  }>
+  _config: IAnyRootConfig
 }
 
 export type TRPCRateLimitOptions<Req, Res, TRoot extends AnyRootConfig> = {
