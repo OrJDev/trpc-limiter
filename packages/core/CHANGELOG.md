@@ -1,5 +1,11 @@
 # @trpc-limiter/core
 
+## 0.0.4
+
+### Patch Changes
+
+- [`902a326`](https://github.com/OrJDev/trpc-limiter/commit/902a3267e207bf795398a2429601e14c5c069be0) Thanks [@OrJDev](https://github.com/OrJDev)! - Fix getRes core
+
 ## 0.0.3
 
 ### Patch Changes
