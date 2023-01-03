@@ -2,8 +2,7 @@
  * Inspired by
  * https://github.com/express-rate-limit/express-rate-limit/blob/master/source/memory-store.ts
  */
-import { type AnyRootConfig } from '@trpc/server'
-import type { TRPCRateLimitOptions } from './types'
+import type { AnyRootConfig, TRPCRateLimitOptions } from './types'
 
 /**
  * Calculates the time when all hit counters will be reset.
@@ -27,7 +26,10 @@ export class MemoryStore {
   /** Reference to the active timer. */
   interval: NodeJS.Timer
 
-  constructor(options: Required<TRPCRateLimitOptions<AnyRootConfig>>) {
+  constructor(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    options: Required<TRPCRateLimitOptions<any, any, AnyRootConfig>>
+  ) {
     this.windowMs = options.windowMs
     this.resetTime = calculateNextResetTime(this.windowMs)
     this.hits = {}

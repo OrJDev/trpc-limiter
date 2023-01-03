@@ -1,50 +1,53 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  type MiddlewareFunction,
-  type AnyRootConfig,
-  TRPCError,
-} from '@trpc/server'
+import { type MiddlewareFunction, TRPCError } from '@trpc/server'
 import { MemoryStore } from './store'
-import { type ILimiterCore, type TRPCRateLimitOptions } from './types'
+import {
+  type AnyRootConfig,
+  type ILimiterCore,
+  type TRPCRateLimitOptions,
+} from './types'
 
-const parseOptions = <TRoot extends AnyRootConfig>(
-  passed: TRPCRateLimitOptions<TRoot>
-): Required<TRPCRateLimitOptions<TRoot>> => {
+const parseOptions = <Req, Res, TRoot extends AnyRootConfig>(
+  passed: TRPCRateLimitOptions<Req, Res, TRoot>
+): Required<TRPCRateLimitOptions<Req, Res, TRoot>> => {
   return {
     root: passed.root,
     windowMs: passed.windowMs ?? 60_000,
     max: passed.max ?? 5,
     message: passed.message ?? 'Too many requests, please try again later.',
     shouldSetHeaders: true,
+    getReq: passed.getReq,
+    getRes: passed.getRes,
   }
 }
 
-export const createGetIPFunc = <Req>(
-  func: (r?: Req) => string | null | string[] | undefined
+const getReqIp = <Req>(
+  func: (r?: Req) => string | null | string[] | undefined,
+  req: Req
 ) => {
-  return (req: Req) => {
-    if (!req) {
-      throw new TRPCError({
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'No request object: expected `req` to be defined',
-      })
-    }
-    const ip = func(req) ?? '127.0.0.1'
-    if (Array.isArray(ip)) return ip[0]
-    return ip
-  }
+  const ip = func(req) ?? '127.0.0.1'
+  if (Array.isArray(ip)) return ip[0]
+  return ip
 }
 
-export const createRateLimiterWrapper = <Res, TRoot extends AnyRootConfig>(
-  getReqIp: (...args: any[]) => string | undefined,
+export * from './types'
+export * from './store'
+
+export const asLimiterCore = <Req, Res>(middleware: ILimiterCore<Req, Res>) => {
+  return middleware
+}
+
+export const defineTRPCLimiter = <Req, Res>(
+  func: (r?: Req) => string | null | string[] | undefined,
   setHeader: (name: string, value: any, res: Res) => void
 ) => {
-  return (opts: TRPCRateLimitOptions<TRoot>) => {
+  return <TRoot extends AnyRootConfig>(
+    opts: TRPCRateLimitOptions<Req, Res, TRoot>
+  ) => {
     const options = parseOptions(opts)
     const store = new MemoryStore(options)
-
     const middleware: MiddlewareFunction<any, any> = async ({ ctx, next }) => {
-      const ip = getReqIp(ctx.req)
+      const ip = getReqIp(func, opts.getReq(ctx))
       if (!ip) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',
@@ -55,7 +58,8 @@ export const createRateLimiterWrapper = <Res, TRoot extends AnyRootConfig>(
       if (totalHits > options.max) {
         const retryAfter = Math.ceil((resetTime.getTime() - Date.now()) / 1000)
         if (opts.shouldSetHeaders) {
-          setHeader('Retry-After', retryAfter, ctx.res)
+          const res = opts.getRes(ctx.res)
+          setHeader('Retry-After', retryAfter, res)
         }
         throw new TRPCError({
           code: 'TOO_MANY_REQUESTS',
@@ -64,14 +68,6 @@ export const createRateLimiterWrapper = <Res, TRoot extends AnyRootConfig>(
       }
       return next()
     }
-
     return middleware
   }
-}
-
-export * from './types'
-export * from './store'
-
-export const defineMiddleware = (middleware: ILimiterCore) => {
-  return middleware
 }

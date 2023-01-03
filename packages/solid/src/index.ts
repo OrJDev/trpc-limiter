@@ -1,14 +1,13 @@
-import {
-  createRateLimiterWrapper,
-  createGetIPFunc,
-  defineMiddleware,
-} from '@trpc-limiter/core'
+import { asLimiterCore, defineTRPCLimiter } from '@trpc-limiter/core'
 
-export const createTRPCSolidLimiter = defineMiddleware(
-  createRateLimiterWrapper(
-    createGetIPFunc<Request>((req) => req?.headers.get('x-forwarded-for')),
-    (name, value, res: Record<string, string>) => {
-      return (res[name] = value)
+export const createTRPCSolidLimiter = asLimiterCore<
+  Request,
+  { headers: Record<string, unknown> }
+>(
+  defineTRPCLimiter(
+    (req) => req?.headers.get('x-forwarded-for'),
+    (name, value, res) => {
+      return (res.headers[name] = value)
     }
   )
 )

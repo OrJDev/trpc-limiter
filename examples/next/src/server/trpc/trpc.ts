@@ -12,8 +12,9 @@ const root = initTRPC.context<Context>().create({
 });
 
 export const rateLimiter = createTRPCNextLimiter({
-  // @ts-expect-error something is wrong with the types when using custom data, like context.
   root,
+  getReq: (ctx) => ctx.req,
+  getRes: (ctx) => ctx.res,
   windowMs: 10000,
   message: "Too many requests, please try again later.",
   max: 15,

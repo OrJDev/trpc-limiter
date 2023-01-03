@@ -18,21 +18,16 @@ npm install @trpc-limiter/core
 ### Usage
 
 ```ts
-import {
-  createRateLimiterWrapper,
-  createGetIPFunc,
-  defineMiddleware,
-} from '@trpc-limiter/core'
+import { asLimiterCore, defineTRPCLimiter } from '@trpc-limiter/core'
 
-type MyRequestType = { headers: Record<string, string> } // ?
-type MyRes = { setHeader: (name: string, value: any) => void }
+type MyRequestType = { headers: Record<string, string> } // request type
+type MyResponseType = { setHeader: (name: string, value: any) => void } // response type
 
-export const createTRPLimiter = defineMiddleware(
-  createRateLimiterWrapper(
-    // return the ip from the request
-    createGetIPFunc<MyRequestType>((req) => req?.headers['x-forwarded-for']),
-    (name, value, res: MyRes) => {
-      return res.setHeader(name, value) // set the header
+export const createMyTRPCLimiter = asLimiterCore<MyRequestType, MyResponseType>(
+  defineTRPCLimiter(
+    (req) => req?.headers['x-forwarded-for'],
+    (name, value, res) => {
+      return res.setHeader(name, value)
     }
   )
 )

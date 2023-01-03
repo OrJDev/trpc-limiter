@@ -1,13 +1,36 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { type MiddlewareFunction, type AnyRootConfig } from '@trpc/server'
+import {
+  type MiddlewareFunction,
+  type RootConfig,
+  type DefaultErrorShape,
+} from '@trpc/server'
 
-// export type IExpectedRootConfig = ReturnType<typeof initTRPC["create"]>;
-export type TRPCRateLimitOptions<TRoot extends AnyRootConfig> = {
+export type AnyRootConfig = {
+  _config: RootConfig<{
+    ctx: any
+    meta: object
+    errorShape: DefaultErrorShape
+    transformer: any
+  }>
+}
+
+export type TRPCRateLimitOptions<Req, Res, TRoot extends AnyRootConfig> = {
   /**
    * Your root tRPC object returned from `initTRPC.create()`
    * @required
    **/
   root: TRoot
+  /**
+   * Your context request
+   * @required
+   **/
+  getReq: (ctx: TRoot['_config']['$types']['ctx']) => Req
+
+  /**
+   * Your context response
+   * @required
+   **/
+  getRes: (ctx: TRoot['_config']['$types']['ctx']) => Res
 
   /**
    * Time frame in milliseconds how long to keep track of requests
@@ -34,6 +57,6 @@ export type TRPCRateLimitOptions<TRoot extends AnyRootConfig> = {
   shouldSetHeaders?: boolean
 }
 
-export type ILimiterCore = <TRoot extends AnyRootConfig>(
-  opts: TRPCRateLimitOptions<TRoot>
+export type ILimiterCore<Req, Res> = <TRoot extends AnyRootConfig>(
+  opts: TRPCRateLimitOptions<Req, Res, TRoot>
 ) => MiddlewareFunction<any, any>

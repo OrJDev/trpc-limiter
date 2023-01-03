@@ -18,6 +18,9 @@ const root = initTRPC.create()
 
 const limiter = createTRPCSolidLimiter({
   root,
+  // ctx is typesafed and inferred from the root
+  getReq: (ctx) => ctx.req, // Expected `Request`
+  getRes: (ctx) => ctx.res, // Expected `Response`
   windowMs: 10000,
   message: 'Too many requests, please try again later.',
   max: 15,
