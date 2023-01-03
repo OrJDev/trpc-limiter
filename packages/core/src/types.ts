@@ -54,3 +54,7 @@ export type TRPCRateLimitOptions<Req, Res, TRoot extends AnyRootConfig> = {
 export type ILimiterCore<Req, Res> = <TRoot extends AnyRootConfig>(
   opts: TRPCRateLimitOptions<Req, Res, TRoot>
 ) => MiddlewareFunction<any, any>
+
+export type IGetReqIPFunc<Req> = (
+  r: Req
+) => string | null | string[] | undefined

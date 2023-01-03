@@ -6,7 +6,7 @@ export const createTRPCNextLimiter = asLimiterCore<
   NextApiResponse
 >(
   defineTRPCLimiter(
-    (req) => req?.headers['x-forwarded-for'] ?? req?.socket.remoteAddress,
+    (req) => req.socket.remoteAddress ?? req.headers['x-forwarded-for'],
     (name, value, res) => {
       return res.setHeader(name, value)
     }

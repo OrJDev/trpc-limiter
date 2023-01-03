@@ -2,6 +2,7 @@
 import { type MiddlewareFunction, TRPCError } from '@trpc/server'
 import { MemoryStore } from './store'
 import {
+  type IGetReqIPFunc,
   type AnyRootConfig,
   type ILimiterCore,
   type TRPCRateLimitOptions,
@@ -21,10 +22,7 @@ const parseOptions = <Req, Res, TRoot extends AnyRootConfig>(
   }
 }
 
-const getReqIp = <Req>(
-  func: (r?: Req) => string | null | string[] | undefined,
-  req: Req
-) => {
+const getReqIp = <Req>(func: IGetReqIPFunc<Req>, req: Req) => {
   const ip = func(req) ?? '127.0.0.1'
   if (Array.isArray(ip)) return ip[0]
   return ip
@@ -38,7 +36,7 @@ export const asLimiterCore = <Req, Res>(middleware: ILimiterCore<Req, Res>) => {
 }
 
 export const defineTRPCLimiter = <Req, Res>(
-  func: (r?: Req) => string | null | string[] | undefined,
+  func: IGetReqIPFunc<Req>,
   setHeader: (name: string, value: any, res: Res) => void
 ) => {
   return <TRoot extends AnyRootConfig>(

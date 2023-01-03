@@ -5,7 +5,7 @@ export const createTRPCSolidLimiter = asLimiterCore<
   { headers: Record<string, unknown> }
 >(
   defineTRPCLimiter(
-    (req) => req?.headers.get('x-forwarded-for'),
+    (req) => req.headers.get('x-forwarded-for'),
     (name, value, res) => {
       return (res.headers[name] = value)
     }
