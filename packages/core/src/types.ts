@@ -31,12 +31,6 @@ export type TRPCRateLimitOptions<TRoot extends AnyRootConfig> = {
   message?: string | ILimiterCallback<TRoot>
 
   /**
-   * Should throw tRPC error when request is blocked.
-   * @default true
-   **/
-  shouldThrow?: boolean
-
-  /**
    * This will be called when a request is blocked.
    **/
   onLimit?: ILimiterCallback<TRoot, void>

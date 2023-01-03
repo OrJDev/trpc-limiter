@@ -14,7 +14,6 @@ const limiter = createTRPCLimiter({
   message: (hitInfo) =>
     `Too many requests, please try again later. ${hitInfo.retryAfter}`,
   max: 15,
-  shouldThrow: false,
   onLimit: (hitInfo, _ctx, fingerprint) => {
     console.log(hitInfo, fingerprint)
     throw new TRPCError({

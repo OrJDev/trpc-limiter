@@ -13,7 +13,6 @@ const parseOptions = <TRoot extends AnyRootConfig>(
     message: passed.message ?? 'Too many requests, please try again later.',
     fingerprint: passed.fingerprint,
     onLimit: passed.onLimit,
-    shouldThrow: passed.shouldThrow === undefined ? true : passed.shouldThrow,
   } as unknown as Required<TRPCRateLimitOptions<AnyRootConfig>>
 }
 
@@ -39,21 +38,20 @@ export const createTRPCLimiter = <TRoot extends AnyRootConfig>(
         retryAfter: Math.ceil((resetTime.getTime() - Date.now()) / 1000),
         totalHits,
       }
-      const message =
-        typeof options.message === 'function'
-          ? await options.message(hitInfo, ctx, fp)
-          : options.message
 
       if (typeof options.onLimit === 'function') {
         await options.onLimit(hitInfo, ctx, fp)
       }
 
-      if (options.shouldThrow) {
-        throw new TRPCError({
-          code: 'TOO_MANY_REQUESTS',
-          message,
-        })
-      }
+      const message =
+        typeof options.message === 'function'
+          ? await options.message(hitInfo, ctx, fp)
+          : options.message
+
+      throw new TRPCError({
+        code: 'TOO_MANY_REQUESTS',
+        message,
+      })
     }
     return next()
   }
