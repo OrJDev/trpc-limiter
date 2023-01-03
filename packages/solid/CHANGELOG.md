@@ -1,5 +1,12 @@
 # @trpc-limiter/solid
 
+## 0.0.4
+
+### Patch Changes
+
+- Updated dependencies [[`902a326`](https://github.com/OrJDev/trpc-limiter/commit/902a3267e207bf795398a2429601e14c5c069be0)]:
+  - @trpc-limiter/core@0.0.4
+
 ## 0.0.3
 
 ### Patch Changes

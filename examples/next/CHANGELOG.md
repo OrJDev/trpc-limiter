@@ -1,5 +1,12 @@
 # example-nextjs
 
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies []:
+  - @trpc-limiter/next@0.0.4
+
 ## 0.1.1
 
 ### Patch Changes
