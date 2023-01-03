@@ -2,7 +2,7 @@
   "$schema": "https://unpkg.com/@changesets/config@2.2.0/schema.json",
   "changelog": [
     "@changesets/changelog-github",
-    { "repo": "OrJDev/solid-auth" }
+    { "repo": "OrJDev/trpc-limiter" }
   ],
   "commit": false,
   "fixed": [],
@@ -15,5 +15,5 @@
   "___experimentalUnsafeOptions_WILL_CHANGE_IN_PATCH": {
     "onlyUpdatePeerDependentsWhenOutOfRange": true
   },
-  "ignore": ["prisma-credentials", "prisma-socials", "www"]
+  "ignore": ["example-nextjs", "example-solid"]
 }
