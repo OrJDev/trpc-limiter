@@ -1,20 +1,15 @@
 import {
-  createTRPCRateLimiter,
-  type TRPCRateLimitOptions,
+  createRateLimiterWrapper,
   createGetIPFunc,
+  verifyIP,
   type ILimiterCore,
 } from '@trpc-limiter/core'
 
-const getReqIP = createGetIPFunc<Request>((req) => {
-  const base = req?.headers.get('x-forwarded-for')
-  if (Array.isArray(base)) return base[0]
-  return base
-})
-
-export const createTRPCSolidLimiter: ILimiterCore = (
-  opts: TRPCRateLimitOptions
-) => {
-  return createTRPCRateLimiter(opts, getReqIP, (name, value, res) => {
-    res[name] = value
-  })
-}
+export const createTRPCSolidLimiter = createRateLimiterWrapper(
+  createGetIPFunc<Request>((req) => {
+    return verifyIP(req?.headers.get('x-forwarded-for'))
+  }),
+  (name, value, res: Record<string, string>) => {
+    return (res[name] = value)
+  }
+) as ILimiterCore

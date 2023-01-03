@@ -2,12 +2,12 @@
 import { type MiddlewareFunction, type AnyRootConfig } from '@trpc/server'
 
 // export type IExpectedRootConfig = ReturnType<typeof initTRPC["create"]>;
-export type TRPCRateLimitOptions = {
+export type TRPCRateLimitOptions<TRoot extends AnyRootConfig> = {
   /**
    * Your root tRPC object returned from `initTRPC.create()`
    * @required
    **/
-  root: AnyRootConfig
+  root: TRoot
 
   /**
    * Time frame in milliseconds how long to keep track of requests
@@ -34,6 +34,6 @@ export type TRPCRateLimitOptions = {
   shouldSetHeaders?: boolean
 }
 
-export type ILimiterCore = (
-  opts: TRPCRateLimitOptions
+export type ILimiterCore = <TRoot extends AnyRootConfig>(
+  opts: TRPCRateLimitOptions<TRoot>
 ) => MiddlewareFunction<any, any>

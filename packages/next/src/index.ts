@@ -1,25 +1,18 @@
 import {
-  createTRPCRateLimiter,
-  type TRPCRateLimitOptions,
+  createRateLimiterWrapper,
   createGetIPFunc,
+  verifyIP,
   type ILimiterCore,
 } from '@trpc-limiter/core'
 import { type NextApiResponse, type NextApiRequest } from 'next'
 
-const getReqIP = createGetIPFunc<NextApiRequest>((req) => {
-  const base = req?.headers['x-forwarded-for'] ?? req?.socket.remoteAddress
-  if (Array.isArray(base)) return base[0]
-  return base
-})
-
-export const createTRPCNextLimiter: ILimiterCore = (
-  opts: TRPCRateLimitOptions
-) => {
-  return createTRPCRateLimiter<NextApiResponse>(
-    opts,
-    getReqIP,
-    (name, value, res) => {
-      res.setHeader(name, value)
-    }
-  )
-}
+export const createTRPCNextLimiter = createRateLimiterWrapper(
+  createGetIPFunc<NextApiRequest>((req) => {
+    return verifyIP(
+      req?.headers['x-forwarded-for'] ?? req?.socket.remoteAddress
+    )
+  }),
+  (name, value, res: NextApiResponse) => {
+    return res.setHeader(name, value)
+  }
+) as ILimiterCore

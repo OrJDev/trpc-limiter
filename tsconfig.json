@@ -5,7 +5,7 @@
     "target": "esnext",
     "newLine": "LF",
     "moduleResolution": "Node",
-    "strict": false,
+    "strict": true,
     "module": "esnext",
     "types": ["node"]
   },
