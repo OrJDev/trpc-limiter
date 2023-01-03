@@ -8,23 +8,12 @@ export type AnyRootConfig = {
   _config: IAnyRootConfig
 }
 
-export type TRPCRateLimitOptions<Req, Res, TRoot extends AnyRootConfig> = {
+export type TRPCRateLimitOptions<TRoot extends AnyRootConfig> = {
   /**
    * Your root tRPC object returned from `initTRPC.create()`
    * @required
    **/
   root: TRoot
-  /**
-   * Your context request
-   * @required
-   **/
-  getReq: (ctx: TRoot['_config']['$types']['ctx']) => Req
-
-  /**
-   * Your context response
-   * @required
-   **/
-  getRes: (ctx: TRoot['_config']['$types']['ctx']) => Res
 
   /**
    * Time frame in milliseconds how long to keep track of requests
@@ -45,16 +34,14 @@ export type TRPCRateLimitOptions<Req, Res, TRoot extends AnyRootConfig> = {
   message?: string
 
   /**
-   * Wheter or not some headers should be set.
-   * @default true
-   */
-  shouldSetHeaders?: boolean
+   * Function to generate a fingerprint for a request based on tRPC context.
+   * @required
+   **/
+  fingerprint: (
+    ctx: TRoot['_config']['$types']['ctx']
+  ) => string | Promise<string>
 }
 
-export type ILimiterCore<Req, Res> = <TRoot extends AnyRootConfig>(
-  opts: TRPCRateLimitOptions<Req, Res, TRoot>
+export type ILimiterCore = <TRoot extends AnyRootConfig>(
+  opts: TRPCRateLimitOptions<TRoot>
 ) => MiddlewareFunction<any, any>
-
-export type IGetReqIPFunc<Req> = (
-  r: Req
-) => string | null | string[] | undefined

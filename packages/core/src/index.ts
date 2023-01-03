@@ -2,70 +2,51 @@
 import { type MiddlewareFunction, TRPCError } from '@trpc/server'
 import { MemoryStore } from './store'
 import {
-  type IGetReqIPFunc,
   type AnyRootConfig,
   type ILimiterCore,
   type TRPCRateLimitOptions,
 } from './types'
 
-const parseOptions = <Req, Res, TRoot extends AnyRootConfig>(
-  passed: TRPCRateLimitOptions<Req, Res, TRoot>
-): Required<TRPCRateLimitOptions<Req, Res, TRoot>> => {
+const parseOptions = <TRoot extends AnyRootConfig>(
+  passed: TRPCRateLimitOptions<TRoot>
+): Required<TRPCRateLimitOptions<TRoot>> => {
   return {
     root: passed.root,
     windowMs: passed.windowMs ?? 60_000,
     max: passed.max ?? 5,
     message: passed.message ?? 'Too many requests, please try again later.',
-    shouldSetHeaders: true,
-    getReq: passed.getReq,
-    getRes: passed.getRes,
+    fingerprint: passed.fingerprint,
   }
-}
-
-const getReqIp = <Req>(func: IGetReqIPFunc<Req>, req: Req) => {
-  const ip = func(req) ?? '127.0.0.1'
-  if (Array.isArray(ip)) return ip[0]
-  return ip
 }
 
 export * from './types'
 export * from './store'
 
-export const asLimiterCore = <Req, Res>(middleware: ILimiterCore<Req, Res>) => {
+export const asLimiterCore = (middleware: ILimiterCore) => {
   return middleware
 }
 
-export const defineTRPCLimiter = <Req, Res>(
-  func: IGetReqIPFunc<Req>,
-  setHeader: (name: string, value: any, res: Res) => void
+export const createTRPCLimiter = <TRoot extends AnyRootConfig>(
+  opts: TRPCRateLimitOptions<TRoot>
 ) => {
-  return <TRoot extends AnyRootConfig>(
-    opts: TRPCRateLimitOptions<Req, Res, TRoot>
-  ) => {
-    const options = parseOptions(opts)
-    const store = new MemoryStore(options)
-    const middleware: MiddlewareFunction<any, any> = async ({ ctx, next }) => {
-      const ip = getReqIp(func, opts.getReq(ctx))
-      if (!ip) {
-        throw new TRPCError({
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'No IP found',
-        })
-      }
-      const { totalHits, resetTime } = await store.increment(ip)
-      if (totalHits > options.max) {
-        const retryAfter = Math.ceil((resetTime.getTime() - Date.now()) / 1000)
-        if (opts.shouldSetHeaders) {
-          const res = opts.getRes(ctx)
-          setHeader('Retry-After', retryAfter, res)
-        }
-        throw new TRPCError({
-          code: 'TOO_MANY_REQUESTS',
-          message: opts.message,
-        })
-      }
-      return next()
+  const options = parseOptions(opts)
+  const store = new MemoryStore(options)
+  const middleware: MiddlewareFunction<any, any> = async ({ ctx, next }) => {
+    const fp = await opts.fingerprint(ctx)
+    if (!fp) {
+      throw new TRPCError({
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'No fingerprint returned',
+      })
     }
-    return middleware
+    const { totalHits } = await store.increment(fp)
+    if (totalHits > options.max) {
+      throw new TRPCError({
+        code: 'TOO_MANY_REQUESTS',
+        message: opts.message,
+      })
+    }
+    return next()
   }
+  return middleware
 }

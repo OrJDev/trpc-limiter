@@ -1,8 +1,8 @@
 import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
-import { createTRPCNextLimiter } from "@trpc-limiter/next";
-
+import { createTRPCLimiter } from "@trpc-limiter/core";
 import { type Context } from "./context";
+import { type NextApiRequest } from "next";
 
 const root = initTRPC.context<Context>().create({
   transformer: superjson,
@@ -11,10 +11,13 @@ const root = initTRPC.context<Context>().create({
   },
 });
 
-export const rateLimiter = createTRPCNextLimiter({
+const getFingerPrint = (req: NextApiRequest) => {
+  const ip = req.socket.remoteAddress ?? req.headers["x-forwarded-for"];
+  return (Array.isArray(ip) ? ip[0] : ip) ?? "127.0.0.1";
+};
+export const rateLimiter = createTRPCLimiter({
   root,
-  getReq: (ctx) => ctx.req,
-  getRes: (ctx) => ctx.res,
+  fingerprint: (ctx) => getFingerPrint(ctx.req),
   windowMs: 10000,
   message: "Too many requests, please try again later.",
   max: 15,

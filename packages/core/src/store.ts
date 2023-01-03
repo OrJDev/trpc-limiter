@@ -26,10 +26,7 @@ export class MemoryStore {
   /** Reference to the active timer. */
   interval: NodeJS.Timer
 
-  constructor(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    options: Required<TRPCRateLimitOptions<any, any, AnyRootConfig>>
-  ) {
+  constructor(options: Required<TRPCRateLimitOptions<AnyRootConfig>>) {
     this.windowMs = options.windowMs
     this.resetTime = calculateNextResetTime(this.windowMs)
     this.hits = {}

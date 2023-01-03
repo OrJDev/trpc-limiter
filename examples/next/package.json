@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^4.16.0",
-    "@trpc-limiter/next": "workspace:*",
+    "@trpc-limiter/core": "workspace:*",
     "@trpc/client": "^10.0.0",
     "@trpc/next": "^10.0.0",
     "@trpc/react-query": "^10.0.0",

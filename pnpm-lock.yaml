@@ -45,7 +45,7 @@ importers:
   examples/next:
     specifiers:
       '@tanstack/react-query': ^4.16.0
-      '@trpc-limiter/next': workspace:*
+      '@trpc-limiter/core': workspace:*
       '@trpc/client': ^10.0.0
       '@trpc/next': ^10.0.0
       '@trpc/react-query': ^10.0.0
@@ -71,7 +71,7 @@ importers:
       zod: ^3.18.0
     dependencies:
       '@tanstack/react-query': 4.20.4_biqbaboplfbrettd7655fr4n2y
-      '@trpc-limiter/next': link:../../packages/next
+      '@trpc-limiter/core': link:../../packages/core
       '@trpc/client': 10.7.0_@trpc+server@10.7.0
       '@trpc/next': 10.7.0_gmaturtqmtlrknaw65ek5pmv2i
       '@trpc/react-query': 10.7.0_x4ie6nhblo2vtx2aafrgzlfqy4
@@ -102,7 +102,7 @@ importers:
       '@solidjs/meta': ^0.28.2
       '@solidjs/router': ^0.6.0
       '@tanstack/solid-query': ^4.15.1
-      '@trpc-limiter/solid': workspace:*
+      '@trpc-limiter/core': workspace:*
       '@trpc/client': ^10.1.0
       '@trpc/server': ^10.1.0
       '@typescript-eslint/eslint-plugin': ^5.42.1
@@ -125,7 +125,7 @@ importers:
       '@solidjs/meta': 0.28.2_solid-js@1.6.6
       '@solidjs/router': 0.6.0_solid-js@1.6.6
       '@tanstack/solid-query': 4.20.4_solid-js@1.6.6
-      '@trpc-limiter/solid': link:../../packages/solid
+      '@trpc-limiter/core': link:../../packages/core
       '@trpc/client': 10.7.0_@trpc+server@10.7.0
       '@trpc/server': 10.7.0
       solid-js: 1.6.6

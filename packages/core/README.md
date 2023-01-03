@@ -1,60 +1,67 @@
-# @trpc-limiter/core
+# tRPC Limiter
 
-The core of tRPC limiter.
+An open source, tRPC rate limiter middleware inspired by [express-rate-limiter](https://github.com/express-rate-limit/express-rate-limit).
 
-## Supported Frameworks
-
-- [@trpc-limiter/next](https://github.com/OrJDev/trpc-limiter/tree/main/packages/next)
-- [@trpc-limiter/solid](https://github.com/OrJDev/trpc-limiter/tree/main/packages/solid)
-
-## Custom Framework
-
-### Install
+## Install
 
 ```bash
-npm install @trpc-limiter/core
+npm install @trpc-limiter/core@latest
 ```
 
-### Usage - API
+## Usage
 
-```ts
-import { asLimiterCore, defineTRPCLimiter } from '@trpc-limiter/core'
-
-type MyRequestType = { headers: Record<string, string> } // request type
-type MyResponseType = { setHeader: (name: string, value: any) => void } // response type
-
-export const createMyTRPCLimiter = asLimiterCore<MyRequestType, MyResponseType>(
-  defineTRPCLimiter(
-    (req) => req.headers['x-forwarded-for'], // return the ip from your request
-    // this is a function that takes header name and value, set it correctly on your response
-    (name, value, res) => {
-      return res.setHeader(name, value)
-    }
-  )
-)
-```
-
-### Usage - tRPC Middleware
+### NextJS
 
 ```ts
 import { initTRPC } from '@trpc/server'
+import { createTRPCLimiter } from '@trpc-limiter/core'
+import { type NextApiRequest } from 'next'
 
-type IContext = {
-  req: MyRequestType
-  res: MyResponseType
+type Context = {
+  req: NextApiRequest
+  // ..etc
 }
 
-const root = initTRPC.context<IContext>().create()
+const root = initTRPC.context<Context>().create()
 
-const limiter = createMyTRPCLimiter({
+const getFingerPrint = (req: Context['req']) => {
+  const ip = req.socket.remoteAddress ?? req.headers['x-forwarded-for']
+  return (Array.isArray(ip) ? ip[0] : ip) ?? '127.0.0.1'
+}
+
+export const rateLimiter = createTRPCLimiter({
   root,
-  // ctx is typesafed and inferred from the root
-  getReq: (ctx) => ctx.req, // Expected `MyRequestType`
-  getRes: (ctx) => ctx.res, // Expected `MyResponseType`
+  fingerprint: (ctx) => getFingerPrint(ctx.req),
   windowMs: 10000,
+  message: 'Too many requests, please try again later.',
+  max: 15,
+})
+
+export const rateLimitedProcedure = root.procedure.use(rateLimiter)
+```
+
+### SolidStart
+
+```ts
+import { initTRPC } from '@trpc/server'
+import { createTRPCLimiter } from '@trpc-limiter/core'
+
+type Context = {
+  req: Request
+  // ..etc
+}
+
+export const root = initTRPC.context<Context>().create()
+
+const limiter = createTRPCLimiter({
+  root,
+  fingerprint: (ctx) => ctx.req.headers.get('x-forwarded-for') ?? '127.0.0.1',
+  windowMs: 20000,
   message: 'Too many requests, please try again later.',
   max: 15,
 })
 
 export const rateLimitedProcedure = root.procedure.use(limiter)
 ```
+
+This project was created because of this tRPC [issue](https://github.com/trpc/trpc/issues/3227) opened by the creator of tRPC.

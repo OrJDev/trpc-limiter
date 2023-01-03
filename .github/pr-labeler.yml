@@ -1,8 +1,2 @@
 '🔒 core':
   - any: ['packages/core/**']
-
-'🌐 solid':
-  - any: ['packages/solid/**']
-
-'💨 next':
-  - any: ['packages/next/**']
