@@ -25,7 +25,8 @@ type MyResponseType = { setHeader: (name: string, value: any) => void } // respo
 
 export const createMyTRPCLimiter = asLimiterCore<MyRequestType, MyResponseType>(
   defineTRPCLimiter(
-    (req) => req?.headers['x-forwarded-for'],
+    (req) => req.headers['x-forwarded-for'], // return the ip from your request
+    // this is a function that takes header name and value, set it correctly on your response
     (name, value, res) => {
       return res.setHeader(name, value)
     }
