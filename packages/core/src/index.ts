@@ -29,8 +29,8 @@ export const defineTRPCLimiter = <
   return <TRoot extends AnyRootConfig>(opts: TRPCRateLimitOptions<TRoot>) => {
     const options = parseOptions(opts)
     const store = adapter.store(options)
-    const middleware = async ({ ctx, next }: any) => {
-      const fp = await options.fingerprint(ctx)
+    const middleware = async ({ ctx, next, input }: any) => {
+      const fp = await options.fingerprint(ctx, input)
       if (!fp) {
         throw new TRPCError({
           code: 'INTERNAL_SERVER_ERROR',

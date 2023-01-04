@@ -40,7 +40,8 @@ export type TRPCRateLimitOptions<TRoot extends AnyRootConfig> = {
    * @required
    **/
   fingerprint: (
-    ctx: TRoot['_config']['$types']['ctx']
+    ctx: TRoot['_config']['$types']['ctx'],
+    input: any
   ) => string | Promise<string>
 }
 

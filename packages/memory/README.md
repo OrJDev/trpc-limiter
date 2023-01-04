@@ -23,7 +23,8 @@ export const root = initTRPC.context<IContext>().create()
 
 const limiter = createTRPCStoreLimiter({
   root,
-  fingerprint: (ctx) => ctx.req.headers.get('x-forwarded-for') ?? '127.0.0.1', // return the ip from the request
+  fingerprint: (ctx, _input) =>
+    ctx.req.headers.get('x-forwarded-for') ?? '127.0.0.1', // return the ip from the request
   windowMs: 20000,
   message: (retryAfter) =>
     `Too many requests, please try again later. ${retryAfter}`,
