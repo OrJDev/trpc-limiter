@@ -5,7 +5,7 @@ export type AnyRootConfig = {
   _config: IAnyRootConfig
 }
 
-export type TRPCRateLimitOptions<TRoot extends AnyRootConfig, RType> = {
+export type TRPCRateLimitOptions<TRoot extends AnyRootConfig> = {
   /**
    * Your root tRPC object returned from `initTRPC.create()`
    * @required
@@ -28,12 +28,12 @@ export type TRPCRateLimitOptions<TRoot extends AnyRootConfig, RType> = {
    * The response body to send when a request is blocked.
    * @default 'Too many requests, please try again later.'
    **/
-  message?: string | ILimiterCallback<TRoot, RType, string>
+  message?: string | ILimiterCallback<TRoot>
 
   /**
    * This will be called when a request is blocked.
    **/
-  onLimit?: ILimiterCallback<TRoot, RType, void>
+  onLimit?: ILimiterCallback<TRoot, void>
 
   /**
    * Function to generate a fingerprint for a request based on tRPC context.
@@ -45,16 +45,15 @@ export type TRPCRateLimitOptions<TRoot extends AnyRootConfig, RType> = {
 }
 
 export type ILimiterinfo = number
-export type ILimiterCallback<TRoot extends AnyRootConfig, RType, T> = (
-  info: RType,
+export type ILimiterCallback<TRoot extends AnyRootConfig, T = string> = (
+  info: ILimiterinfo,
   ctx: TRoot['_config']['$types']['ctx'],
   fingerprint: string
 ) => T | Promise<T>
 
 export type ILimiterAdapter<
-  RType,
   Store extends (
-    opts: Required<TRPCRateLimitOptions<AnyRootConfig, RType>>,
+    opts: Required<TRPCRateLimitOptions<AnyRootConfig>>,
     ctx: any
   ) => any
 > = {
@@ -62,6 +61,6 @@ export type ILimiterAdapter<
   isBlocked: (
     store: ReturnType<Store>,
     fingerprint: string,
-    opts: Required<TRPCRateLimitOptions<AnyRootConfig, RType>>
-  ) => Promise<RType | null> | RType | null
+    opts: Required<TRPCRateLimitOptions<AnyRootConfig>>
+  ) => Promise<number | null> | number | null
 }
