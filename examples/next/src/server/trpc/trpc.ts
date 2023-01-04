@@ -19,8 +19,13 @@ export const rateLimiter = createTRPCUpstashLimiter({
   root,
   fingerprint: (ctx) => getFingerPrint(ctx.req),
   windowMs: 20000,
-  message: (retryAfter) =>
-    `Too many requests, please try again later. ${retryAfter}`,
+  message: (hitInfo) =>
+    `Too many requests, please try again later. ${Math.ceil(
+      (hitInfo.reset - Date.now()) / 1000
+    )}`,
+  onLimit: (hitInfo) => {
+    console.log(hitInfo);
+  },
   max: 5,
 });
 

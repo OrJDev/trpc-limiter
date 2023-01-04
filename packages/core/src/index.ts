@@ -4,10 +4,11 @@ import {
   type ILimiterAdapter,
   type AnyRootConfig,
   type TRPCRateLimitOptions,
+  type IStoreCallback,
 } from './types'
 
-const parseOptions = <TRoot extends AnyRootConfig>(
-  passed: TRPCRateLimitOptions<TRoot>
+const parseOptions = <TRoot extends AnyRootConfig, Res>(
+  passed: TRPCRateLimitOptions<TRoot, Res>
 ) => {
   return {
     root: passed.root,
@@ -16,17 +17,17 @@ const parseOptions = <TRoot extends AnyRootConfig>(
     message: passed.message ?? 'Too many requests, please try again later.',
     fingerprint: passed.fingerprint,
     onLimit: passed.onLimit,
-  } as unknown as Required<TRPCRateLimitOptions<AnyRootConfig>>
+  } as unknown as Required<TRPCRateLimitOptions<AnyRootConfig, Res>>
 }
 
 export * from './types'
 
-export const defineTRPCLimiter = <
-  Store extends (opts: Required<TRPCRateLimitOptions<AnyRootConfig>>) => any
->(
-  adapter: ILimiterAdapter<Store>
+export const defineTRPCLimiter = <Store extends IStoreCallback, Res>(
+  adapter: ILimiterAdapter<Store, Res>
 ) => {
-  return <TRoot extends AnyRootConfig>(opts: TRPCRateLimitOptions<TRoot>) => {
+  return <TRoot extends AnyRootConfig>(
+    opts: TRPCRateLimitOptions<TRoot, Res>
+  ) => {
     const options = parseOptions(opts)
     const store = adapter.store(options)
     const middleware = async ({ ctx, next, input }: any) => {
@@ -37,14 +38,14 @@ export const defineTRPCLimiter = <
           message: 'No fingerprint returned',
         })
       }
-      const retryAfter = await adapter.isBlocked(store, fp, options)
-      if (retryAfter) {
+      const hitInfo = await adapter.isBlocked(store, fp, options as any)
+      if (hitInfo) {
         if (typeof options.onLimit === 'function') {
-          await options.onLimit(retryAfter, ctx, fp)
+          await options.onLimit(hitInfo as any, ctx, fp)
         }
         const message =
           typeof options.message === 'function'
-            ? await options.message(retryAfter, ctx, fp)
+            ? await options.message(hitInfo as any, ctx, fp)
             : options.message
         throw new TRPCError({
           code: 'TOO_MANY_REQUESTS',

@@ -19,7 +19,8 @@ export const createTRPCStoreLimiter = defineTRPCLimiter({
     // inferred store from above
     const { totalHits, resetTime } = await store.increment(fingerPrint)
     if (totalHits > opts.max) {
-      return Math.ceil((resetTime.getTime() - Date.now()) / 1000) // rertyAfter in seconds
+      // this will be inferred and will be used as the first paramter of onLimit
+      return Math.ceil((resetTime.getTime() - Date.now()) / 1000)
     }
     return null // if request should not be blocked, return null
   },
@@ -44,11 +45,11 @@ const limiter = createTRPCStoreLimiter({
   fingerprint: (ctx, _input) =>
     ctx.req.headers.get('x-forwarded-for') ?? '127.0.0.1', // return the ip from the request
   windowMs: 20000,
-  message: (retryAfter) =>
-    `Too many requests, please try again later. ${retryAfter}`,
+  // hitInfo is inferred from the return type of `isBlocked`, its a number in this case
+  message: (hitInfo) => `Too many requests, please try again later. ${hitInfo}`,
   max: 15,
-  onLimit: (retryAfter, _ctx, fingerprint) => {
-    console.log(retryAfter, fingerprint)
+  onLimit: (hitInfo, _ctx, fingerprint) => {
+    console.log(hitInfo, fingerprint)
     throw new TRPCError({
       code: 'INTERNAL_SERVER_ERROR',
       message: 'Too many requests unique',

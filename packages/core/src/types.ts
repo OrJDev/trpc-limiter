@@ -5,7 +5,7 @@ export type AnyRootConfig = {
   _config: IAnyRootConfig
 }
 
-export type TRPCRateLimitOptions<TRoot extends AnyRootConfig> = {
+export type TRPCRateLimitOptions<TRoot extends AnyRootConfig, Res> = {
   /**
    * Your root tRPC object returned from `initTRPC.create()`
    * @required
@@ -28,12 +28,12 @@ export type TRPCRateLimitOptions<TRoot extends AnyRootConfig> = {
    * The response body to send when a request is blocked.
    * @default 'Too many requests, please try again later.'
    **/
-  message?: string | ILimiterCallback<TRoot>
+  message?: string | ILimiterCallback<TRoot, Res>
 
   /**
    * This will be called when a request is blocked.
    **/
-  onLimit?: ILimiterCallback<TRoot, void>
+  onLimit?: ILimiterCallback<TRoot, Res, void>
 
   /**
    * Function to generate a fingerprint for a request based on tRPC context.
@@ -45,23 +45,25 @@ export type TRPCRateLimitOptions<TRoot extends AnyRootConfig> = {
   ) => string | Promise<string>
 }
 
-export type ILimiterinfo = number
-export type ILimiterCallback<TRoot extends AnyRootConfig, T = string> = (
-  info: ILimiterinfo,
+export type ILimiterCallback<TRoot extends AnyRootConfig, Res, T = string> = (
+  info: Res,
   ctx: TRoot['_config']['$types']['ctx'],
   fingerprint: string
 ) => T | Promise<T>
 
-export type ILimiterAdapter<
-  Store extends (
-    opts: Required<TRPCRateLimitOptions<AnyRootConfig>>,
-    ctx: any
-  ) => any
-> = {
+export type ILimiterAdapter<Store extends IStoreCallback, Res> = {
   store: Store
   isBlocked: (
     store: ReturnType<Store>,
     fingerprint: string,
-    opts: Required<TRPCRateLimitOptions<AnyRootConfig>>
-  ) => Promise<number | null> | number | null
+    opts: Required<TRPCRateLimitOptions<AnyRootConfig, Store>>
+  ) => Promise<InferResCallback<Res> | null> | InferResCallback<Res> | null
 }
+
+export type InferResCallback<Res> = NonNullable<
+  Res extends Promise<infer R2> ? R2 : Res
+>
+
+export type IStoreCallback = (
+  opts: Required<TRPCRateLimitOptions<AnyRootConfig, any>>
+) => any

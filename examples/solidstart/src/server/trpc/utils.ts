@@ -14,13 +14,13 @@ const limiter = createTRPCStoreLimiter({
   message: (retryAfter) =>
     `Too many requests, please try again later. ${retryAfter}`,
   max: 15,
-  // onLimit: (retryAfter, _ctx, fingerprint) => {
-  //   console.log(retryAfter, fingerprint)
-  //   throw new TRPCError({
-  //     code: 'INTERNAL_SERVER_ERROR',
-  //     message: 'Too many requests unique',
-  //   })
-  // },
+  onLimit: (hitInfo, _ctx, fingerprint) => {
+    console.log(hitInfo, fingerprint)
+    // throw new TRPCError({
+    //   code: 'INTERNAL_SERVER_ERROR',
+    //   message: 'Too many requests unique',
+    // })
+  },
 })
 
 export const rateLimitedProcedure = root.procedure.use(limiter)

@@ -9,11 +9,8 @@ export const createTRPCUpstashLimiter = defineTRPCLimiter({
       limiter: Ratelimit.fixedWindow(opts.max, `${opts.windowMs} ms`),
     }),
   async isBlocked(store, fingerprint) {
-    const { success, pending, reset } = await store.limit(fingerprint)
+    const { success, pending, ...rest } = await store.limit(fingerprint)
     await pending
-    if (!success) {
-      return Math.ceil((reset - Date.now()) / 1000)
-    }
-    return null
+    return success ? null : rest
   },
 })
