@@ -8,12 +8,12 @@ Upstash Rate Limiter Adapter for tRPC Limiter.
 npm install @trpc-limiter/upstash@latest
 ```
 
-## Variables
+## Enviroment Variables
 
 Both `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` are required. an error will be thrown if they are not provided
 
-- UPSTASH_REDIS_REST_TOKEN
-- UPSTASH_REDIS_REST_URL
+- UPSTASH_REDIS_REST_TOKEN=...
+- UPSTASH_REDIS_REST_URL=...
 
 Check [This Blog](https://upstash.com/blog/upstash-ratelimit) For More Info.
 
