@@ -21,9 +21,6 @@ type IContext = {
 
 export const root = initTRPC.context<IContext>().create()
 
-export const router = root.router
-export const procedure = root.procedure
-
 const limiter = createTRPCStoreLimiter({
   root,
   fingerprint: (ctx) => ctx.req.headers.get('x-forwarded-for') ?? '127.0.0.1', // return the ip from the request
