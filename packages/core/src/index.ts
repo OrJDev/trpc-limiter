@@ -6,8 +6,8 @@ import {
   type TRPCRateLimitOptions,
 } from './types'
 
-const parseOptions = <TRoot extends AnyRootConfig>(
-  passed: TRPCRateLimitOptions<TRoot>
+const parseOptions = <TRoot extends AnyRootConfig, RType>(
+  passed: TRPCRateLimitOptions<TRoot, RType>
 ) => {
   return {
     root: passed.root,
@@ -16,17 +16,22 @@ const parseOptions = <TRoot extends AnyRootConfig>(
     message: passed.message ?? 'Too many requests, please try again later.',
     fingerprint: passed.fingerprint,
     onLimit: passed.onLimit,
-  } as unknown as Required<TRPCRateLimitOptions<AnyRootConfig>>
+  } as unknown as Required<TRPCRateLimitOptions<AnyRootConfig, RType>>
 }
 
 export * from './types'
 
 export const defineTRPCLimiter = <
-  Store extends (opts: Required<TRPCRateLimitOptions<AnyRootConfig>>) => any
+  RType,
+  Store extends (
+    opts: Required<TRPCRateLimitOptions<AnyRootConfig, RType>>
+  ) => any
 >(
-  adapter: ILimiterAdapter<Store>
+  adapter: ILimiterAdapter<RType, Store>
 ) => {
-  return <TRoot extends AnyRootConfig>(opts: TRPCRateLimitOptions<TRoot>) => {
+  return <TRoot extends AnyRootConfig>(
+    opts: TRPCRateLimitOptions<TRoot, RType>
+  ) => {
     const options = parseOptions(opts)
     const store = adapter.store(options)
     const middleware = async ({ ctx, next }: any) => {
