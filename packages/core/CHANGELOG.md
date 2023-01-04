@@ -1,5 +1,11 @@
 # @trpc-limiter/core
 
+## 0.0.7
+
+### Patch Changes
+
+- [`2c0c272`](https://github.com/OrJDev/trpc-limiter/commit/2c0c2727a6922f77e1734bd517fa685ae33d7224) Thanks [@OrJDev](https://github.com/OrJDev)! - Feat: Add Memory Store And Upstash Adapters
+
 ## 0.0.6
 
 ### Patch Changes
