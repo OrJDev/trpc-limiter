@@ -1,8 +1,4 @@
-/**
- * Inspired by
- * https://github.com/express-rate-limit/express-rate-limit/blob/master/source/memory-store.ts
- */
-import type { AnyRootConfig, TRPCRateLimitOptions } from './types'
+import type { AnyRootConfig, TRPCRateLimitOptions } from '@trpc-limiter/core'
 
 /**
  * Calculates the time when all hit counters will be reset.

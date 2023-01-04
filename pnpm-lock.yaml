@@ -45,7 +45,7 @@ importers:
   examples/next:
     specifiers:
       '@tanstack/react-query': ^4.16.0
-      '@trpc-limiter/core': workspace:*
+      '@trpc-limiter/upstash': workspace:*
       '@trpc/client': ^10.0.0
       '@trpc/next': ^10.0.0
       '@trpc/react-query': ^10.0.0
@@ -71,7 +71,7 @@ importers:
       zod: ^3.18.0
     dependencies:
       '@tanstack/react-query': 4.20.4_biqbaboplfbrettd7655fr4n2y
-      '@trpc-limiter/core': link:../../packages/core
+      '@trpc-limiter/upstash': link:../../packages/upstash
       '@trpc/client': 10.7.0_@trpc+server@10.7.0
       '@trpc/next': 10.7.0_gmaturtqmtlrknaw65ek5pmv2i
       '@trpc/react-query': 10.7.0_x4ie6nhblo2vtx2aafrgzlfqy4
@@ -102,7 +102,7 @@ importers:
       '@solidjs/meta': ^0.28.2
       '@solidjs/router': ^0.6.0
       '@tanstack/solid-query': ^4.15.1
-      '@trpc-limiter/core': workspace:*
+      '@trpc-limiter/memory': workspace:*
       '@trpc/client': ^10.1.0
       '@trpc/server': ^10.1.0
       '@typescript-eslint/eslint-plugin': ^5.42.1
@@ -125,7 +125,7 @@ importers:
       '@solidjs/meta': 0.28.2_solid-js@1.6.6
       '@solidjs/router': 0.6.0_solid-js@1.6.6
       '@tanstack/solid-query': 4.20.4_solid-js@1.6.6
-      '@trpc-limiter/core': link:../../packages/core
+      '@trpc-limiter/memory': link:../../packages/memory
       '@trpc/client': 10.7.0_@trpc+server@10.7.0
       '@trpc/server': 10.7.0
       solid-js: 1.6.6
@@ -151,6 +151,36 @@ importers:
       '@trpc/client': ^10.7.0
       '@trpc/server': ^10.7.0
       typescript: ^4.9.3
+    devDependencies:
+      '@trpc/client': 10.7.0_@trpc+server@10.7.0
+      '@trpc/server': 10.7.0
+      typescript: 4.9.4
+
+  packages/memory:
+    specifiers:
+      '@trpc-limiter/core': workspace:*
+      '@trpc/client': ^10.7.0
+      '@trpc/server': ^10.7.0
+      typescript: ^4.9.3
+    dependencies:
+      '@trpc-limiter/core': link:../core
+    devDependencies:
+      '@trpc/client': 10.7.0_@trpc+server@10.7.0
+      '@trpc/server': 10.7.0
+      typescript: 4.9.4
+
+  packages/upstash:
+    specifiers:
+      '@trpc-limiter/core': workspace:*
+      '@trpc/client': ^10.7.0
+      '@trpc/server': ^10.7.0
+      '@upstash/ratelimit': ^0.1.5
+      '@upstash/redis': ^1.18.0
+      typescript: ^4.9.3
+    dependencies:
+      '@trpc-limiter/core': link:../core
+      '@upstash/ratelimit': 0.1.5_@upstash+redis@1.18.5
+      '@upstash/redis': 1.18.5
     devDependencies:
       '@trpc/client': 10.7.0_@trpc+server@10.7.0
       '@trpc/server': 10.7.0
@@ -2133,6 +2163,22 @@ packages:
       '@typescript-eslint/types': 5.48.0
       eslint-visitor-keys: 3.3.0
     dev: true
+
+  /@upstash/ratelimit/0.1.5_@upstash+redis@1.18.5:
+    resolution: {integrity: sha512-v0zq3Xpq42HQBvXDvm0C4djYvKC5TjHG29uCpbIQcOw0znJNroHewI8y4Yk4tBeEF1rvj2RjDkFihjCp6uTExQ==}
+    peerDependencies:
+      '@upstash/redis': ^1.4.0
+    dependencies:
+      '@upstash/redis': 1.18.5
+    dev: false
+
+  /@upstash/redis/1.18.5:
+    resolution: {integrity: sha512-AYz9QDg/iVVfK76gGNQp4Rof82uuGu5d2vo//DVZqC6Dimf7sGWNZKXGc8hXueS1GKNvF3zBmOXw00Rt/tQx3g==}
+    dependencies:
+      isomorphic-fetch: 3.0.0
+    transitivePeerDependencies:
+      - encoding
+    dev: false
 
   /@vinxi/rollup-plugin-visualizer/5.7.1_rollup@2.79.1:
     resolution: {integrity: sha512-gIwdH6B2rh7EoWgtL80yMW/0AM6riSXwNccM7rwMONG5CTVYzHYDQgnccrl40iWHrQLYZI0rvM66EQ1TRB8REA==}
@@ -4511,6 +4557,15 @@ packages:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
     dev: true
 
+  /isomorphic-fetch/3.0.0:
+    resolution: {integrity: sha512-qvUtwJ3j6qwsF3jLxkZ72qCgjMysPzDfeV240JHiGZsANBYd+EEuu35v7dfrJ9Up0Ak07D7GGSkGhCHTqg/5wA==}
+    dependencies:
+      node-fetch: 2.6.7
+      whatwg-fetch: 3.6.2
+    transitivePeerDependencies:
+      - encoding
+    dev: false
+
   /joi/17.7.0:
     resolution: {integrity: sha512-1/ugc8djfn93rTE3WRKdCzGGt/EtiYKxITMO4Wiv6q5JL1gl9ePt4kBsl1S499nbosspfctIQTpYIhSmHA3WAg==}
     dependencies:
@@ -4965,7 +5020,6 @@ packages:
         optional: true
     dependencies:
       whatwg-url: 5.0.0
-    dev: true
 
   /node-releases/2.0.8:
     resolution: {integrity: sha512-dFSmB8fFHEH/s81Xi+Y/15DQY6VHW81nXRj86EMSL3lmuTmK1e+aT4wrFCkTbm+gSwkw4KpX+rT/pMM2c1mF+A==}
@@ -6285,7 +6339,6 @@ packages:
 
   /tr46/0.0.3:
     resolution: {integrity: sha512-N3WMsuqV66lT30CrXNbEjx4GEwlow3v6rr4mCcv6prnfwhS01rkgyFdjPNBYd9br7LpXV1+Emh01fHnq2Gdgrw==}
-    dev: true
 
   /tr46/1.0.1:
     resolution: {integrity: sha512-dTpowEjclQ7Kgx5SdBkqRzVhERQXov8/l9Ft9dVM9fmg0W0KQSVaXX9T4i6twCPNtYiZM53lpSSUAwJbFPOHxA==}
@@ -6679,18 +6732,20 @@ packages:
 
   /webidl-conversions/3.0.1:
     resolution: {integrity: sha512-2JAn3z8AR6rjK8Sm8orRC0h/bcl/DqL7tRPdGZ4I1CjdF+EaMLmYxBHyXuKL849eucPFhvBoxMsflfOb8kxaeQ==}
-    dev: true
 
   /webidl-conversions/4.0.2:
     resolution: {integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==}
     dev: true
+
+  /whatwg-fetch/3.6.2:
+    resolution: {integrity: sha512-bJlen0FcuU/0EMLrdbJ7zOnW6ITZLrZMIarMUVmdKtsGvZna8vxKYaexICWPfZ8qwf9fzNq+UEIZrnSaApt6RA==}
+    dev: false
 
   /whatwg-url/5.0.0:
     resolution: {integrity: sha512-saE57nupxk6v3HY35+jzBwYa0rKSy0XR8JSxZPwgLr7ys0IBzhGviA1/TUGJLmSVqs8pb9AnvICXEuOHLprYTw==}
     dependencies:
       tr46: 0.0.3
       webidl-conversions: 3.0.1
-    dev: true
 
   /whatwg-url/7.1.0:
     resolution: {integrity: sha512-WUu7Rg1DroM7oQvGWfOiAK21n74Gg+T4elXEQYkOhtyLeWiJFoOGLXPKI/9gzIie9CtwVLm8wtw6YJdKyxSjeg==}

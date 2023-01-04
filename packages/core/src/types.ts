@@ -22,7 +22,7 @@ export type TRPCRateLimitOptions<TRoot extends AnyRootConfig> = {
    * The number of requests allowed per `windowMs`.
    * @default 5
    **/
-  max?: number | ((ctx: unknown) => number)
+  max?: number
 
   /**
    * The response body to send when a request is blocked.
@@ -44,13 +44,23 @@ export type TRPCRateLimitOptions<TRoot extends AnyRootConfig> = {
   ) => string | Promise<string>
 }
 
-export type ILimiterinfo = {
-  retryAfter: number
-  totalHits: number
-}
-
+export type ILimiterinfo = number
 export type ILimiterCallback<TRoot extends AnyRootConfig, T = string> = (
   info: ILimiterinfo,
   ctx: TRoot['_config']['$types']['ctx'],
   fingerprint: string
 ) => T | Promise<T>
+
+export type ILimiterAdapter<
+  Store extends (
+    opts: Required<TRPCRateLimitOptions<AnyRootConfig>>,
+    ctx: any
+  ) => any
+> = {
+  store: Store
+  isBlocked: (
+    store: ReturnType<Store>,
+    fingerprint: string,
+    opts: Required<TRPCRateLimitOptions<AnyRootConfig>>
+  ) => Promise<number | null> | number | null
+}

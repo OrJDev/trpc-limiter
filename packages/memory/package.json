@@ -1,10 +1,11 @@
 {
-  "name": "@trpc-limiter/core",
-  "version": "0.0.6",
+  "name": "@trpc-limiter/memory",
+  "version": "0.0.1",
   "private": false,
   "keywords": [
     "tRPC",
-    "Limiter"
+    "Limiter",
+    "Memory"
   ],
   "repository": "https://github.com/OrJDev/trpc-limiter.git",
   "license": "ISC",
@@ -25,6 +26,9 @@
     "dev": "tsup --config ../../tsup.config.js --watch",
     "lint": "eslint . --fix --ext .ts,.tsx,.js,.jsx",
     "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@trpc-limiter/core": "workspace:*"
   },
   "devDependencies": {
     "@trpc/client": "^10.7.0",

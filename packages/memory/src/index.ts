@@ -1,15 +1,3 @@
-# @trpc-limiter/core
-
-The core of tRPC limiter.
-
-## Current Adapters
-
-- [Upstash / Redis](https://github.com/OrJDev/trpc-limiter/tree/main/packages/upstash)
-- [Memory Store](https://github.com/OrJDev/trpc-limiter/tree/main/packages/memory)
-
-## Custom Adapter
-
-```ts
 import { defineTRPCLimiter } from '@trpc-limiter/core'
 import { MemoryStore } from './store'
 
@@ -23,4 +11,3 @@ export const createTRPCStoreLimiter = defineTRPCLimiter({
     return null
   },
 })
-```

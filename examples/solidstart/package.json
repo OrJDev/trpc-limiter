@@ -13,7 +13,7 @@
     "@solidjs/meta": "^0.28.2",
     "@solidjs/router": "^0.6.0",
     "@tanstack/solid-query": "^4.15.1",
-    "@trpc-limiter/core": "workspace:*",
+    "@trpc-limiter/memory": "workspace:*",
     "@trpc/client": "^10.1.0",
     "@trpc/server": "^10.1.0",
     "solid-js": "^1.5.7",

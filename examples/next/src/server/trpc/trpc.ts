@@ -1,6 +1,6 @@
 import { initTRPC } from "@trpc/server";
 import superjson from "superjson";
-import { createTRPCLimiter } from "@trpc-limiter/core";
+import { createTRPCUpstashLimiter } from "@trpc-limiter/upstash";
 import { type Context } from "./context";
 import { type NextApiRequest } from "next";
 
@@ -15,12 +15,13 @@ const getFingerPrint = (req: NextApiRequest) => {
   const ip = req.socket.remoteAddress ?? req.headers["x-forwarded-for"];
   return (Array.isArray(ip) ? ip[0] : ip) ?? "127.0.0.1";
 };
-export const rateLimiter = createTRPCLimiter({
+export const rateLimiter = createTRPCUpstashLimiter({
   root,
   fingerprint: (ctx) => getFingerPrint(ctx.req),
-  windowMs: 10000,
-  message: "Too many requests, please try again later.",
-  max: 15,
+  windowMs: 20000,
+  message: (retryAfter) =>
+    `Too many requests, please try again later. ${retryAfter}`,
+  max: 5,
 });
 
 export const router = root.router;
