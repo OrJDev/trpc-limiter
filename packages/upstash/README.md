@@ -30,13 +30,16 @@ type Context = {
 }
 const root = initTRPC.context<Context>().create()
 
-const getFingerPrint = (req: NextApiRequest) => {
-  const ip = req.socket.remoteAddress ?? req.headers['x-forwarded-for']
-  return (Array.isArray(ip) ? ip[0] : ip) ?? '127.0.0.1'
+const getFingerprint = (req: NextApiRequest) => {
+  const forwarded = req.headers["x-forwarded-for"]
+  const ip = forwarded
+    ? (typeof forwarded === "string" ? forwarded : forwarded[0])?.split(/, /)[0]
+    : req.socket.remoteAddress
+  return ip || "127.0.0.1"
 }
 export const rateLimiter = createTRPCUpstashLimiter({
   root,
-  fingerprint: (ctx, _input) => getFingerPrint(ctx.req),
+  fingerprint: (ctx, _input) => getFingerprint(ctx.req),
   windowMs: 10000,
   message: (hitInfo) =>
     `Too many requests, please try again later. ${Math.ceil(
