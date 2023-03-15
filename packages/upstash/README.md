@@ -37,6 +37,7 @@ const getFingerprint = (req: NextApiRequest) => {
     : req.socket.remoteAddress
   return ip || "127.0.0.1"
 }
+
 export const rateLimiter = createTRPCUpstashLimiter({
   root,
   fingerprint: (ctx, _input) => getFingerprint(ctx.req),
