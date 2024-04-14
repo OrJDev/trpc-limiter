@@ -27,13 +27,13 @@
     "typecheck": "tsc --noEmit"
   },
   "devDependencies": {
-    "@trpc/client": "^10.7.0",
-    "@trpc/server": "^10.7.0",
+    "@trpc/client": "^10.43.6",
+    "@trpc/server": "^10.43.6",
     "typescript": "^4.9.3"
   },
   "peerDependencies": {
-    "@trpc/client": "^10.0.0-proxy-beta.21",
-    "@trpc/server": "^10.0.0-proxy-beta.21"
+    "@trpc/client": "^10.43.6",
+    "@trpc/server": "^10.43.6"
   },
   "engines": {
     "node": ">=16"
