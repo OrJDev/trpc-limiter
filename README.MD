@@ -62,10 +62,7 @@ const t = initTRPC.context<Context>().create()
 
 const rateLimiter = createTrpcRedisLimiter<typeof t>({
   fingerprint: (ctx) => defaultFingerPrint(ctx.req),
-  message: (hitInfo) =>
-    `Too many requests, please try again later. ${Math.ceil(
-      (hitInfo.reset - Date.now()) / 1000
-    )}`,
+  message: (hitInfo) => `Too many requests, please try again later. ${hitInfo}`,
   max: 15,
   windowMs: 10000,
   redisClient: redis,

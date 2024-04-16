@@ -22,7 +22,7 @@ export class MemoryStore {
   /** Reference to the active timer. */
   interval: NodeJS.Timer
 
-  constructor(options: Required<TRPCRateLimitOptions<AnyRootConfig>>) {
+  constructor(options: Required<TRPCRateLimitOptions<AnyRootConfig, any>>) {
     this.windowMs = options.windowMs
     this.resetTime = calculateNextResetTime(this.windowMs)
     this.hits = {}

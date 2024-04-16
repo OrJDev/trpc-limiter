@@ -83,10 +83,7 @@ const rateLimiter = createTrpcRedisLimiter<typeof t>({
     console.log("c$", c);
     return c;
   },
-  message: (hitInfo) =>
-    `Too many requests, please try again later. ${Math.ceil(
-      (hitInfo.reset - Date.now()) / 1000,
-    )}`,
+  message: (hitInfo) => `Too many requests, please try again later. ${hitInfo}`,
   max: 5,
   windowMs: 10000,
   redisClient: redis,

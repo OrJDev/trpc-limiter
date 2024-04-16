@@ -76,8 +76,8 @@ export const defineTRPCLimiter = <
 
 export const defineLimiterWithProps = <
   T,
-  Store extends IStoreCallback<T> = IStoreCallback<T>,
-  Res = any
+  Res,
+  Store extends IStoreCallback<T> = IStoreCallback<T>
 >(
   adapter: ILimiterAdapter<Store, Res, T>,
   getDefaultOptions: (

@@ -10,12 +10,28 @@ import {
   IRateLimiterStoreOptions,
 } from 'rate-limiter-flexible'
 
-export const createTrpcRedisLimiter = defineLimiterWithProps<{
-  redisClient: IRateLimiterStoreOptions['storeClient']
-  limiter?: (
-    opts: Required<BaseOpts<AnyRootConfig, any>>
-  ) => IRateLimiterStoreOptions['insuranceLimiter']
-}>(
+const isBlocked = async (store: RateLimiterRedis, fingerprint: string) => {
+  try {
+    await store.consume(fingerprint)
+    return null
+  } catch (error) {
+    if (error instanceof RateLimiterRes) {
+      return Math.round(error.msBeforeNext / 1000) || 1
+    }
+    // Should not happen with `insuranceLimiter`
+    throw error
+  }
+}
+
+export const createTrpcRedisLimiter = defineLimiterWithProps<
+  {
+    redisClient: IRateLimiterStoreOptions['storeClient']
+    limiter?: (
+      opts: Required<BaseOpts<AnyRootConfig, any>>
+    ) => IRateLimiterStoreOptions['insuranceLimiter']
+  },
+  NonNullable<Awaited<ReturnType<typeof isBlocked>>>
+>(
   {
     store: (opts) => {
       return new RateLimiterRedis({
@@ -26,18 +42,7 @@ export const createTrpcRedisLimiter = defineLimiterWithProps<{
         insuranceLimiter: opts.limiter(opts),
       })
     },
-    async isBlocked(store, fingerprint) {
-      try {
-        await store.consume(fingerprint)
-        return null
-      } catch (error) {
-        if (error instanceof RateLimiterRes) {
-          return Math.round(error.msBeforeNext / 1000) || 1
-        }
-        // Should not happen with `insuranceLimiter`
-        throw error
-      }
-    },
+    isBlocked,
   },
   (currentState) => {
     return {

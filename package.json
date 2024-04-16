@@ -14,15 +14,6 @@
     "prepare": "husky install"
   },
   "lint-staged": {
-    "*.{js,json}": "prettier --write",
-    "packages/**/*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "examples/**/*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
     "package.json": "sort-package-json"
   },
   "devDependencies": {
