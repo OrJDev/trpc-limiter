@@ -6,13 +6,12 @@
   "author": "OrJDev",
   "type": "module",
   "scripts": {
-    "build": "turbo build",
+    "build": "turbo run build --filter=./packages/**/*",
     "clean": "turbo clean && rm -rf node_modules pnpm-lock.yaml",
     "dev": "turbo dev",
     "dev:packages": "turbo dev --filter=./packages/*",
     "lint": "eslint . --fix --ext .ts,.tsx,.js,.jsx",
-    "prepare": "husky install",
-    "www": "cd www && pnpm dev"
+    "prepare": "husky install"
   },
   "lint-staged": {
     "*.{js,json}": "prettier --write",
@@ -43,7 +42,11 @@
     "prettier": "^2.8.0",
     "sort-package-json": "^2.1.0",
     "tsup": "^6.5.0",
-    "turbo": "^1.6.3",
+    "turbo": "^1.13.2",
     "typescript": "^4.9.3"
+  },
+  "engines": {
+    "node": ">=16",
+    "pnpm": ">=7"
   }
 }

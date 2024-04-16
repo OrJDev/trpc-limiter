@@ -13,7 +13,10 @@ npm install @trpc-limiter/memory@latest
 ```ts
 import { initTRPC, TRPCError } from '@trpc/server'
 import type { IContext } from './context'
-import { createTRPCStoreLimiter } from '@trpc-limiter/memory'
+import {
+  createTRPCStoreLimiter,
+  defaultFingerPrint,
+} from '@trpc-limiter/memory'
 
 type IContext = {
   req: Request // your request type
@@ -21,10 +24,8 @@ type IContext = {
 
 export const root = initTRPC.context<IContext>().create()
 
-const limiter = createTRPCStoreLimiter({
-  root,
-  fingerprint: (ctx, _input) =>
-    ctx.req.headers.get('x-forwarded-for') ?? '127.0.0.1', // return the ip from the request
+const limiter = createTRPCStoreLimiter<typeof root>({
+  fingerprint: (ctx) => defaultFingerPrint(ctx.req),
   windowMs: 20000,
   message: (retryAfter) =>
     `Too many requests, please try again later. ${retryAfter}`,
@@ -39,4 +40,31 @@ const limiter = createTRPCStoreLimiter({
 })
 
 export const rateLimitedProcedure = root.procedure.use(limiter)
+```
+
+```ts
+import { initTRPC } from '@trpc/server'
+import { type NextApiRequest } from 'next'
+import {
+  createTRPCStoreLimiter,
+  defaultFingerPrint,
+} from '@trpc-limiter/memory'
+
+type Context = {
+  req: NextApiRequest
+}
+
+const t = initTRPC.context<Context>().create()
+
+const rateLimiter = createTRPCStoreLimiter<typeof t>({
+  fingerprint: (ctx) => defaultFingerPrint(ctx.req),
+  message: (hitInfo) =>
+    `Too many requests, please try again later. ${Math.ceil(
+      (hitInfo.reset - Date.now()) / 1000
+    )}`,
+  max: 15,
+  windowMs: 10000,
+})
+
+export const rateLimitedProcedure = t.procedure.use(rateLimiter)
 ```

@@ -31,13 +31,13 @@
     "@trpc-limiter/core": "workspace:*"
   },
   "devDependencies": {
-    "@trpc/client": "^10.7.0",
-    "@trpc/server": "^10.7.0",
+    "@trpc/client": "next",
+    "@trpc/server": "next",
     "typescript": "^4.9.3"
   },
   "peerDependencies": {
-    "@trpc/client": "^10.0.0-proxy-beta.21",
-    "@trpc/server": "^10.0.0-proxy-beta.21"
+    "@trpc/client": "next",
+    "@trpc/server": "next"
   },
   "engines": {
     "node": ">=16"

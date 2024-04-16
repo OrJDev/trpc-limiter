@@ -31,19 +31,20 @@ export const createTRPCStoreLimiter = defineTRPCLimiter({
 
 ```ts
 import { initTRPC, TRPCError } from '@trpc/server'
-import type { IContext } from './context'
-import { createTRPCStoreLimiter } from '@trpc-limiter/memory'
+import {
+  createTRPCStoreLimiter,
+  defaultFingerPrint,
+} from '@trpc-limiter/memory'
 
+// trpc context type
 type IContext = {
-  req: Request // your request type
+  req: Request
 }
 
 export const root = initTRPC.context<IContext>().create()
 
 const limiter = createTRPCStoreLimiter({
-  root,
-  fingerprint: (ctx, _input) =>
-    ctx.req.headers.get('x-forwarded-for') ?? '127.0.0.1', // return the ip from the request
+  fingerprint: (ctx, _input) => defaultFingerPrint(ctx.req), // return the ip from the request
   windowMs: 20000,
   // hitInfo is inferred from the return type of `isBlocked`, its a number in this case
   message: (hitInfo) => `Too many requests, please try again later. ${hitInfo}`,
@@ -58,4 +59,26 @@ const limiter = createTRPCStoreLimiter({
 })
 
 export const rateLimitedProcedure = root.procedure.use(limiter)
+```
+
+## defaultFingerPrint
+
+The `defaultFingerPrint` function is exported from every adapter, it basically tries and fetch the IP from the request supporting both NextJS & SolidStart (Fetch).
+
+```ts
+import {
+  createTRPCStoreLimiter,
+  defaultFingerPrint,
+} from '@trpc-limiter/memory'
+
+// or
+
+import {
+  createTRPCUpstashLimiter,
+  defaultFingerPrint,
+} from '@trpc-limiter/upstash'
+
+// or
+
+import { createTrpcRedisLimiter, defaultFingerPrint } from '@trpc-limiter/redis'
 ```

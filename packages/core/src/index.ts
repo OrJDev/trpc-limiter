@@ -5,32 +5,48 @@ import {
   type AnyRootConfig,
   type TRPCRateLimitOptions,
   type IStoreCallback,
+  MwFn,
 } from './types'
 
-const parseOptions = <TRoot extends AnyRootConfig, Res>(
-  passed: TRPCRateLimitOptions<TRoot, Res>
+const parseOptions = <TRoot extends AnyRootConfig, Res, A = null>(
+  passed: TRPCRateLimitOptions<TRoot, Res>,
+  getDefaultOptions?: (
+    currentState: Required<TRPCRateLimitOptions<AnyRootConfig, any, A>>
+  ) => Required<A>
 ) => {
-  return {
-    root: passed.root,
+  const b = {
+    ...passed,
     windowMs: passed.windowMs ?? 60_000,
     max: passed.max ?? 5,
     message: passed.message ?? 'Too many requests, please try again later.',
     fingerprint: passed.fingerprint,
     onLimit: passed.onLimit,
-  } as unknown as Required<TRPCRateLimitOptions<AnyRootConfig, Res>>
+  } as unknown as Required<TRPCRateLimitOptions<AnyRootConfig, Res, A>>
+  const newOpts = getDefaultOptions ? getDefaultOptions(b as any) : ({} as any)
+  return {
+    ...b,
+    ...newOpts,
+  }
 }
 
 export * from './types'
 
-export const defineTRPCLimiter = <Store extends IStoreCallback, Res>(
-  adapter: ILimiterAdapter<Store, Res>
+export const defineTRPCLimiter = <
+  Store extends IStoreCallback<A>,
+  Res,
+  A = null
+>(
+  adapter: ILimiterAdapter<Store, Res, A>,
+  getDefaultOptions?: (
+    currentState: Required<TRPCRateLimitOptions<AnyRootConfig, any, A>>
+  ) => Required<A>
 ) => {
   return <TRoot extends AnyRootConfig>(
-    opts: TRPCRateLimitOptions<TRoot, Res>
+    opts: TRPCRateLimitOptions<TRoot, Res, A>
   ) => {
-    const options = parseOptions(opts)
-    const store = adapter.store(options)
-    const middleware = async ({ ctx, next, input }: any) => {
+    const options = parseOptions(opts as any, getDefaultOptions)
+    const store = adapter.store(options as any)
+    const middleware: MwFn<TRoot> = async ({ ctx, next, input }) => {
       const fp = await options.fingerprint(ctx, input)
       if (!fp) {
         throw new TRPCError({
@@ -56,4 +72,35 @@ export const defineTRPCLimiter = <Store extends IStoreCallback, Res>(
     }
     return middleware
   }
+}
+
+export const defineLimiterWithProps = <
+  T,
+  Store extends IStoreCallback<T> = IStoreCallback<T>,
+  Res = any
+>(
+  adapter: ILimiterAdapter<Store, Res, T>,
+  getDefaultOptions: (
+    currentState: Required<TRPCRateLimitOptions<AnyRootConfig, any, T>>
+  ) => Required<T>
+) => {
+  const d = defineTRPCLimiter(adapter as any, getDefaultOptions)
+  return <TRoot extends AnyRootConfig>(
+    opts: TRPCRateLimitOptions<TRoot, Res, T>
+  ) => {
+    type D = typeof defineTRPCLimiter<Store, Res, T>
+    return d(opts as any) as any as ReturnType<ReturnType<D>>
+  }
+}
+
+export const defaultFingerPrint = (req: Request | Record<any, any>) => {
+  const forwarded =
+    req instanceof Request
+      ? req.headers.get('x-forwarded-for')
+      : req.headers['x-forwarded-for']
+  const ip = forwarded
+    ? (typeof forwarded === 'string' ? forwarded : forwarded[0])?.split(/, /)[0]
+    : (req as any)?.socket?.remoteAddress ?? null
+
+  return ip || '127.0.0.1'
 }

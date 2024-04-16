@@ -1,10 +1,11 @@
 {
-  "name": "@trpc-limiter/core",
-  "version": "0.0.8",
+  "name": "@trpc-limiter/redis",
+  "version": "0.0.1",
   "private": false,
   "keywords": [
     "tRPC",
-    "Limiter"
+    "Limiter",
+    "Redis"
   ],
   "repository": "https://github.com/OrJDev/trpc-limiter.git",
   "license": "ISC",
@@ -26,14 +27,20 @@
     "lint": "eslint . --fix --ext .ts,.tsx,.js,.jsx",
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "@trpc-limiter/core": "workspace:*",
+    "rate-limiter-flexible": "^5.0.0"
+  },
   "devDependencies": {
     "@trpc/client": "next",
     "@trpc/server": "next",
+    "redis": "^4.6.13",
     "typescript": "^4.9.3"
   },
   "peerDependencies": {
     "@trpc/client": "next",
-    "@trpc/server": "next"
+    "@trpc/server": "next",
+    "redis": "^4.6.13"
   },
   "engines": {
     "node": ">=16"

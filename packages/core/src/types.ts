@@ -1,17 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { type AnyRootConfig as IAnyRootConfig } from '@trpc/server'
+
+import {
+  AnyRootTypes,
+  MiddlewareFunction,
+  RootConfig,
+} from '@trpc/server/unstable-core-do-not-import'
 
 export type AnyRootConfig = {
-  _config: IAnyRootConfig
+  _config: RootConfig<AnyRootTypes>
 }
 
-export type TRPCRateLimitOptions<TRoot extends AnyRootConfig, Res> = {
-  /**
-   * Your root tRPC object returned from `initTRPC.create()`
-   * @required
-   **/
-  root: TRoot
-
+export type BaseOpts<TRoot extends AnyRootConfig, Res> = {
   /**
    * Time frame in milliseconds how long to keep track of requests
    * @default 60000 (1 minute)
@@ -45,13 +44,19 @@ export type TRPCRateLimitOptions<TRoot extends AnyRootConfig, Res> = {
   ) => string | Promise<string>
 }
 
+export type TRPCRateLimitOptions<
+  TRoot extends AnyRootConfig,
+  Res,
+  A = null
+> = A extends null ? BaseOpts<TRoot, Res> : A & BaseOpts<TRoot, Res>
+
 export type ILimiterCallback<TRoot extends AnyRootConfig, Res, T = string> = (
   info: Res,
   ctx: TRoot['_config']['$types']['ctx'],
   fingerprint: string
 ) => T | Promise<T>
 
-export type ILimiterAdapter<Store extends IStoreCallback, Res> = {
+export type ILimiterAdapter<Store extends IStoreCallback<A>, Res, A = null> = {
   store: Store
   isBlocked: (
     store: ReturnType<Store>,
@@ -64,6 +69,14 @@ export type InferResCallback<Res> = NonNullable<
   Res extends Promise<infer R2> ? R2 : Res
 >
 
-export type IStoreCallback = (
-  opts: Required<TRPCRateLimitOptions<AnyRootConfig, any>>
+export type IStoreCallback<A = null> = (
+  opts: Required<TRPCRateLimitOptions<AnyRootConfig, any, A>>
 ) => any
+
+export type MwFn<TRoot extends AnyRootConfig> = MiddlewareFunction<
+  TRoot['_config']['$types']['ctx'],
+  TRoot['_config']['$types']['meta'],
+  TRoot['_config']['$types']['ctx'],
+  TRoot['_config']['$types']['ctx'],
+  unknown
+>

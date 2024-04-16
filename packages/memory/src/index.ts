@@ -11,3 +11,5 @@ export const createTRPCStoreLimiter = defineTRPCLimiter({
     return null
   },
 })
+
+export { defaultFingerPrint } from '@trpc-limiter/core'
