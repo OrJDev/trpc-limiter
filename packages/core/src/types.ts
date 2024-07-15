@@ -40,7 +40,8 @@ export type BaseOpts<TRoot extends AnyRootConfig, Res> = {
    **/
   fingerprint: (
     ctx: TRoot['_config']['$types']['ctx'],
-    input: any
+    input: any,
+    path: string
   ) => string | Promise<string>
 }
 
